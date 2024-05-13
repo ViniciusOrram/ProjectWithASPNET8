@@ -5,7 +5,7 @@ using ProjectWithASPNET8.Services;
 namespace ProjectWithASPNET8.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class PersonController : ControllerBase
     {
 
