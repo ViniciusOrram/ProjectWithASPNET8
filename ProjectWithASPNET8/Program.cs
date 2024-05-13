@@ -12,7 +12,7 @@ builder.Services.AddControllers();
 var connection = builder.Configuration["MySqlConnection:MySqlConnectionString"];
 builder.Services.AddDbContext<MySqlContext>(options => options.UseMySql(
     connection,
-    new MySqlServerVersion(new Version(12, 7, 0)))
+    new MySqlServerVersion(new Version(8, 0, 36)))
 );
 
 //Dependency Injection
