@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using ProjectWithASPNET8.Model.Base;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProjectWithASPNET8.Model
 {
     [Table("person")]
-    public class Person
+    public class Person : BaseEntity
     {
-        [Column("id")]
-        public long Id { get; set; }
 
         [Column("first_name")]
         public string FirstName { get; set; }

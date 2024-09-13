@@ -7,5 +7,6 @@ namespace ProjectWithASPNET8.Model.Context
         public MySqlContext(){}
         public MySqlContext(DbContextOptions<MySqlContext> options) : base(options){}
         public DbSet<Person> Persons { get; set; }
+        public DbSet<Book> Books { get; set; }
     }
 }

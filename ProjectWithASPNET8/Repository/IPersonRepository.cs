@@ -1,9 +1,8 @@
 ﻿using ProjectWithASPNET8.Model;
-using System.Collections.Generic;
 
 namespace ProjectWithASPNET8.Repository
 {
-    public interface IPersonRepository
+    public interface IRepository
     {
         Person Create(Person person);
         Person FindById(long id);

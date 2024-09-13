@@ -1,7 +1,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using ProjectWithASPNET8.Model;
 using ProjectWithASPNET8.Business;
+using ProjectWithASPNET8.Data.VO;
 
 namespace ProjectWithASPNET8.Controllers
 {
@@ -38,7 +38,7 @@ namespace ProjectWithASPNET8.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] Person person)
+        public IActionResult Post([FromBody] PersonVO person)
         {
             if(person == null)
             {
@@ -48,7 +48,7 @@ namespace ProjectWithASPNET8.Controllers
         }
 
         [HttpPut]
-        public IActionResult Put([FromBody] Person person)
+        public IActionResult Put([FromBody] PersonVO person)
         {
             if(person == null)
             {
