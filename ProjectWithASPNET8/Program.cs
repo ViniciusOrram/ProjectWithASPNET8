@@ -9,6 +9,8 @@ using MySqlConnector;
 using EvolveDb;
 using ProjectWithASPNET8.Repository.Generic;
 using Microsoft.Net.Http.Headers;
+using ProjectWithASPNET8.Hypermidia.Filters;
+using ProjectWithASPNET8.Hypermidia.Enricher;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,12 @@ builder.Services.AddMvc( options =>
 })
 	.AddXmlSerializerFormatters();
 
+var filterOption = new HyperMediaFilterOption();
+filterOption.ContentResponseEnricherList.Add(new PersonEnricher());
+filterOption.ContentResponseEnricherList.Add(new BookEnricher());
+
+builder.Services.AddSingleton(filterOption);
+
 
 //Versioning API
 builder.Services.AddApiVersioning();
@@ -56,7 +64,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.MapControllerRoute("DefaultApi", "{controller=values}/v{version=apiVersion}/{id?}");
+
 app.Run();
+
 
 void MigrateDatabase(string connection)
 {

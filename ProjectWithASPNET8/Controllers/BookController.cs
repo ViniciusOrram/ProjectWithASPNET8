@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProjectWithASPNET8.Business;
 using ProjectWithASPNET8.Data.VO;
+using ProjectWithASPNET8.Hypermidia.Filters;
 using ProjectWithASPNET8.Model;
 
 namespace ProjectWithASPNET8.Controllers
@@ -22,6 +23,7 @@ namespace ProjectWithASPNET8.Controllers
 
         //BUSCAR TODOS
         [HttpGet]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get()
         {
             return Ok(_bookBusiness.FindAll());
@@ -29,6 +31,7 @@ namespace ProjectWithASPNET8.Controllers
 
         //BUSCAR POR ID
         [HttpGet("{id}")]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Get(long id)
         {
             var book = _bookBusiness.FindById(id);
@@ -41,6 +44,7 @@ namespace ProjectWithASPNET8.Controllers
 
         //CREATE
         [HttpPost]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Post([FromBody] BookVO book)
         {
             if (book == null)
@@ -52,6 +56,7 @@ namespace ProjectWithASPNET8.Controllers
 
         //UPDATE
         [HttpPut]
+        [TypeFilter(typeof(HyperMediaFilter))]
         public IActionResult Put([FromBody] BookVO book)
         {
             if (book == null)
