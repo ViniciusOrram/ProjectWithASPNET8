@@ -1,14 +1,10 @@
-﻿using ProjectWithASPNET8.Model;
+﻿using ProjectWithASPNET8.Data.VO;
+using ProjectWithASPNET8.Model;
 
 namespace ProjectWithASPNET8.Repository
 {
-    public interface IRepository
+    public interface IPersonRepository : IRepository<Person>
     {
-        Person Create(Person person);
-        Person FindById(long id);
-        List<Person> FindAll();
-        Person Update(Person person);
-        void Delete(long id);
-        bool Exists(long id);
+        Person Disable(long id);
     }
 }

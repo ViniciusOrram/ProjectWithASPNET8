@@ -1,6 +1,6 @@
 ﻿using ProjectWithASPNET8.Model;
 
-namespace ProjectWithASPNET8.Repository
+namespace ProjectWithASPNET8.Repository.Generic
 {
     public interface IBookRepository
     {

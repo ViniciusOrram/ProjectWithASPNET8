@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectWithASPNET8.Business;
 using ProjectWithASPNET8.Data.VO;
@@ -8,6 +9,7 @@ namespace ProjectWithASPNET8.Controllers
 {
     [ApiVersion("1")]
     [ApiController]
+    [Authorize("Bearer")]
     [Route("api/[controller]/v{version:apiVersion}")]
     public class PersonController : ControllerBase
     {
@@ -74,6 +76,19 @@ namespace ProjectWithASPNET8.Controllers
                 return BadRequest();
             }
             return Ok(_personBusiness.Update(person));
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType((200), Type = typeof(PersonVO))]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
+        [TypeFilter(typeof(HyperMediaFilter))]
+        public IActionResult Patch(long id)
+        {
+            var person = _personBusiness.Disable(id);
+
+            return Ok(person);
         }
 
         [HttpDelete("{id}")]

@@ -14,6 +14,14 @@ using ProjectWithASPNET8.Hypermidia.Enricher;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Rewrite;
+using ProjectWithASPNET8.Services;
+using ProjectWithASPNET8.Services.Implementations;
+using ProjectWithASPNET8.Configurations;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 var appName = "REST API's RESTFull from 0 to Azure with ASP.NET Core 8 and Docker";
@@ -21,15 +29,62 @@ var appVersion = "v1";
 var appDescription = "API RESTFull developed in course";
 
 // Add services to the container.
+builder.Services.AddRouting(options => options.LowercaseUrls = true);
+
+var tokenConfigurations = new TokenConfiguration();
+
+new ConfigureFromConfigurationOptions<TokenConfiguration>(
+        builder.Configuration.GetSection("TokenConfigurations")
+    )
+    .Configure(tokenConfigurations);
+
+//Configurando apenas um instancia por vez
+builder.Services.AddSingleton(tokenConfigurations);
+
+//Definindo os parametros de autenticação
+builder.Services.AddAuthentication(options =>
+{
+	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+	.AddJwtBearer(options =>
+	{
+		options.TokenValidationParameters = new TokenValidationParameters
+		{
+			ValidateIssuer = true,
+			ValidateAudience = true,
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			ValidIssuer = tokenConfigurations.Issuer,
+			ValidAudience = tokenConfigurations.Audience,
+			IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenConfigurations.Secret)),
+		};
+	});
+
+builder.Services.AddAuthorization(auth =>
+{
+	auth.AddPolicy("Bearer", new AuthorizationPolicyBuilder()
+		.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+		.RequireAuthenticatedUser().Build());
+});
+
+//Add Cors
+builder.Services.AddCors(options => options.AddDefaultPolicy(builder =>
+{
+	builder.AllowAnyOrigin()
+	.AllowAnyMethod()
+	.AllowAnyHeader();
+}));
+
 builder.Services.AddControllers();
 
 //Configuração Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddApiVersioning();
+
 
 builder.Services.AddSwaggerGen(c =>
 {
-	c.SwaggerDoc("v1",
+	c.SwaggerDoc(appVersion,
 		new OpenApiInfo
 		{
 			Title = appName,
@@ -42,6 +97,7 @@ builder.Services.AddSwaggerGen(c =>
 			}
 		});
 });
+
 
 
 //Connection MySql
@@ -79,6 +135,14 @@ builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
 
 builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
 
+builder.Services.AddScoped<ILoginBusiness, LoginBusinessImplementation>();
+
+builder.Services.AddTransient<ITokenService, TokenService>();
+
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+
+builder.Services.AddTransient<IPersonRepository, PersonRepository>();
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 
 var app = builder.Build();
@@ -87,7 +151,8 @@ var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-app.UseRouting();
+//Habilitando CORS
+app.UseCors();
 
 //Responsavel por gerar o json da nossa aplicação
 app.UseSwagger();
