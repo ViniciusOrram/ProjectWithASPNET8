@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var appName = "REST API's RESTFull from 0 to Azure with ASP.NET Core 8 and Docker";
@@ -131,6 +132,10 @@ builder.Services.AddSingleton(filterOption);
 builder.Services.AddApiVersioning();
 
 //Dependency Injection
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+builder.Services.AddScoped<IFileBusiness, FileBusinessImplementation>();
+
 builder.Services.AddScoped<IPersonBusiness, PersonBusinessImplementation>();
 
 builder.Services.AddScoped<IBookBusiness, BookBusinessImplementation>();
@@ -139,11 +144,12 @@ builder.Services.AddScoped<ILoginBusiness, LoginBusinessImplementation>();
 
 builder.Services.AddTransient<ITokenService, TokenService>();
 
-builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddTransient<IPersonRepository, PersonRepository>();
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+
 
 var app = builder.Build();
 
@@ -160,8 +166,7 @@ app.UseSwagger();
 //Responsavel por gerar a pagina html
 app.UseSwaggerUI(c =>
 {
-	c.SwaggerEndpoint("/swagger/v1/swagger.json",
-		$"{appName} - {appVersion}");
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{appName} - {appVersion}");
 });
 
 var option = new RewriteOptions();
