@@ -86,5 +86,27 @@ namespace ProjectWithASPNET8.Repository.Generic
         {
             return dataset.Any((p => p.Id.Equals(id)));
         }
+
+        //Retornando a pagina
+        public List<T> FindWithPagedSearch(string query)
+        {
+            return dataset.FromSqlRaw<T>(query).ToList();
+        }
+
+        //Retorn um count total atraves da string que passamos por paramentro
+        public int GetCount(string query)
+        {
+            var result = "";
+            using (var connection = _context.Database.GetDbConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+                    result = command.ExecuteScalar().ToString();
+                }
+            }
+            return int.Parse(result);
+        }
     }
 }

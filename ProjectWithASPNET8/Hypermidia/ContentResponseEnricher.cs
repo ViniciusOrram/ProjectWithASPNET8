@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Routing;
 using ProjectWithASPNET8.Hypermidia.Abstract;
+using ProjectWithASPNET8.Hypermidia.Utils;
 using System.Collections.Concurrent;
 
 namespace ProjectWithASPNET8.Hypermidia
@@ -15,7 +16,7 @@ namespace ProjectWithASPNET8.Hypermidia
         }
         public bool CanEnrich(Type contentType)
         {
-            return contentType == typeof(T) || contentType == typeof(List<T>);
+            return contentType == typeof(T) || contentType == typeof(List<T>) || contentType == typeof(PagedSearchVO<T>);
         }
         protected abstract Task EnrichModel(T content, IUrlHelper urlHelper);
         bool IResponseEnricher.CanEnrich(ResultExecutingContext response)
@@ -39,6 +40,13 @@ namespace ProjectWithASPNET8.Hypermidia
                 {
                     ConcurrentBag<T> bag = new ConcurrentBag<T>(collection);
                     Parallel.ForEach(bag, (element) =>
+                    {
+                        EnrichModel(element, urlHelper);
+                    });
+                }
+                else if (okObjectResult.Value is PagedSearchVO<T> pagedSearch)
+                {
+                    Parallel.ForEach(pagedSearch.List.ToList(), (element) =>
                     {
                         EnrichModel(element, urlHelper);
                     });
