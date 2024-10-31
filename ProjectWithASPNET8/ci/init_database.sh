@@ -1,0 +1,1 @@
+for i in `find /home/database/ -name "*.sql" | sort --version-sort`; do mysql -udocker -pdocker project-with-asp-net8 < $i; done;

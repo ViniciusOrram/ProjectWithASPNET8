@@ -118,6 +118,7 @@ namespace ProjectWithASPNET8.Controllers
         public IActionResult Delete(long id)
         {
             _personBusiness.Delete(id);
+
             return NoContent();
         }
     }
